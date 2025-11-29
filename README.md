@@ -18,11 +18,12 @@ PRE-TCC-001
 * **Histórico:**
   * **v1.0 (21/11/2025):** Criação inicial da proposta de Scoping.
   * **v1.1 (26/11/2025):** Inclusão da matriz GQM, definição detalhada de métricas, refinamento do contexto fiscal e análise de riscos.
+  * **v1.2 (28/11/2025):** População, sujeitos e amostragem; Instrumentação e protocolo operacional; Plano de análise de dados (pré-execução).
 
 ### 1.4 Datas (criação, última atualização)
 
 * **Data de criação:** 21/11/2025
-* **Última atualização:** 26/11/2025
+* **Última atualização:** 28/11/2025
 
 ### 1.5 Autores (nome, área, contato)
 

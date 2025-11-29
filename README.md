@@ -226,50 +226,91 @@ Existem situações que, se ocorrerem agora, nos obrigam a cancelar ou adiar o p
 ## 7. Modelo conceitual e hipóteses
 
 ### 7.1 Modelo conceitual do experimento
-Explique, em texto ou esquema, como você acredita que os fatores influenciam as respostas (por exemplo, "técnica A reduz defeitos em relação a B").
+O modelo baseia-se na premissa de que a "camada fina de conhecimento" (*thin spread of domain knowledge*) é a principal causa de falhas na especificação manual feita por analistas não-especialistas.
+
+Acredita-se que a introdução do Agente de IA (GPT-4o), contextualizado com os manuais fiscais (MOC), atuará como uma **variável independente** que impactará positivamente a **Detecção de Lacunas (Recall)**. O modelo sugere que a capacidade de varredura massiva da IA superará a atenção humana limitada, identificando requisitos de exceção que passariam despercebidos. Por outro lado, o modelo reconhece um *trade-off*: espera-se que a IA gere um número maior de falsos positivos (menor **Precisão**) do que a revisão humana conservadora.
 
 ### 7.2 Hipóteses formais (H0, H1)
-Formule explicitamente as hipóteses nulas e alternativas para cada questão principal, incluindo a direção esperada do efeito quando fizer sentido.
+As hipóteses abaixo formalizam a comparação entre o método de Revisão Manual (Controle) e a Revisão Assistida por IA (Tratamento).
+
+* **Hipótese 1 - Eficácia na Detecção (Recall):**
+  * **H0₁ (Nula):** `Recall(IA) ≤ Recall(Manual)` — O uso da IA não aumenta a quantidade de lacunas críticas encontradas em relação à revisão manual.
+  * **H1₁ (Alternativa):** `Recall(IA) > Recall(Manual)` — O uso da IA aumenta significativamente a identificação de lacunas críticas de conformidade.
+
+* **Hipótese 2 - Confiabilidade/Alucinação (Precision):**
+  * **H0₂ (Nula):** `Precision(IA) = Precision(Manual)` — A taxa de acerto das sugestões da IA é equivalente à do humano.
+  * **H1₂ (Alternativa):** `Precision(IA) < Precision(Manual)` — A IA gera proporcionalmente mais sugestões inválidas (alucinações) do que o humano.
 
 ### 7.3 Nível de significância e considerações de poder
-Defina o nível de significância (por exemplo, α = 0,05) e comente o que se espera em termos de poder estatístico, relacionando-o ao tamanho de amostra planejado.
+O experimento adotará um nível de significância padrão de **α = 0,05** (95% de confiança).
+Considerando as restrições de um TCC (amostra limitada de requisitos), reconhece-se que o **Poder Estatístico (1 - β)** pode ser reduzido. Para mitigar isso, buscar-se-á um *Effect Size* (Tamanho de Efeito) grande, focando em lacunas binárias e óbvias (ex: "Falta contingência"), onde a diferença de performance entre o Humano Júnior e a IA Sênior tende a ser expressiva.
 
 ## 8. Variáveis, fatores, tratamentos e objetos de estudo
 
 ### 8.1 Objetos de estudo
-Descreva o que será efetivamente manipulado ou analisado (módulos de código, requisitos, tarefas, casos de teste, issues, etc.).
+O objeto a ser analisado é um conjunto controlado de **Especificações de Requisitos para Emissão de NFS-e**. Este conjunto (o "Artefato Defeituoso") conterá:
+* 10 a 20 Histórias de Usuário (*User Stories*).
+* Falhas injetadas deliberadamente (ex: omissão de validação de XSD, falta de tratamento de *timeout* da SEFAZ, ausência de retenção de ISS).
 
 ### 8.2 Sujeitos / participantes (visão geral)
-Caracterize em alto nível quem serão os participantes (desenvolvedores, testadores, estudantes, etc.), sem ainda entrar em detalhes de seleção.
+Devido à natureza *in vitro* e automatizada do experimento, os "sujeitos" que executam a tarefa de revisão são:
+1.  **Sujeito A (Humano/Controle):** O próprio pesquisador, simulando a revisão de um Analista Pleno sem acesso a ferramentas de IA.
+2.  **Sujeito B (Agente Virtual/Tratamento):** O modelo GPT-4o configurado via API.
 
 ### 8.3 Variáveis independentes (fatores) e seus níveis
-Liste os fatores que serão manipulados (por exemplo, técnica, ferramenta, processo) e indique os níveis de cada um (A/B, X/Y, alto/baixo).
+O fator principal manipulado neste estudo é o **Método de Revisão**.
 
-### 8.4 Tratamentos (condições experimental)
-Descreva claramente cada condição de experimento (grupo controle, tratamento 1, tratamento 2, etc.) e o que distingue uma da outra.
+### 8.4 Tratamentos (condições experimentais)
+A tabela abaixo descreve o desenho fatorial simples do experimento (1 Fator, 2 Níveis).
+
+| Fator | Nível / Tratamento | Descrição da Condição |
+| :--- | :--- | :--- |
+| **Método de Revisão** | **T1: Manual (Controle)** | Revisão realizada exclusivamente por humano, consultando manuais PDF, sem auxílio de IA. Representa o *baseline*. |
+| | **T2: Assistido por IA** | Revisão realizada pelo agente GPT-4o com *Prompt* de Auditoria Fiscal (CoT). |
 
 ### 8.5 Variáveis dependentes (respostas)
-Informe as medidas de resultado que você observará (por exemplo, número de defeitos, esforço em horas, tempo de conclusão, satisfação).
+A tabela a seguir detalha todas as variáveis monitoradas, seus tipos e como serão coletadas.
+
+| Tipo de Variável | Nome | Descrição | Escala / Unidade |
+| :--- | :--- | :--- | :--- |
+| **Independente** | Método de Revisão | A técnica aplicada para encontrar lacunas. | Nominal (Manual / IA) |
+| **Dependente** | **Recall (Revocação)** | Capacidade de encontrar o erro. Fórmula: `Lacunas Encontradas / Total de Lacunas Injetadas`. | Razão (0.00 a 1.00) |
+| **Dependente** | **Precision (Precisão)** | Qualidade da sugestão. Fórmula: `Sugestões Válidas / Total de Sugestões`. | Razão (0.00 a 1.00) |
+| **Controle** | Modelo de LLM | Versão exata do modelo utilizado (ex: `gpt-4o-2024-05-13`) para garantir consistência. | Nominal |
+| **Controle** | Temperatura da IA | Parâmetro de aleatoriedade do modelo, fixado em 0.0 ou 0.1. | Numérica (0.0 - 1.0) |
+| **Controle** | Domínio | O escopo das regras (apenas NFS-e Padrão Nacional). | Nominal |
 
 ### 8.6 Variáveis de controle / bloqueio
-Liste fatores que você não está estudando diretamente, mas que serão mantidos constantes ou usados para formar blocos (por exemplo, experiência, tipo de tarefa).
+Fatores mantidos constantes para evitar ruído nos dados:
+* **Temperatura:** Fixada próxima a zero para minimizar a criatividade e focar na análise determinística.
+* **Prompt Base:** A estrutura do prompt será idêntica para todas as execuções do grupo de tratamento.
+* **Complexidade dos Requisitos:** Todos os requisitos testados terão nível de complexidade similar (regras de negócio de validação).
 
 ### 8.7 Possíveis variáveis de confusão conhecidas
-Identifique fatores que podem distorcer os resultados (como diferenças de contexto, motivação ou carga de trabalho) e que você pretende monitorar.
+* **Qualidade do Prompt:** Um prompt mal escrito pode fazer a IA falhar não por falta de capacidade, mas por falta de instrução. Isso será monitorado na fase de calibração (O3).
+* **Viés do Pesquisador:** Como o pesquisador criou os defeitos e também validará as respostas, existe risco de subjetividade na classificação de "Sugestão Válida".
 
 ## 9. Desenho experimental
 
-### 9.1 Tipo de desenho (completamente randomizado, blocos, fatorial, etc.)
-Indique qual tipo de desenho será utilizado e justifique brevemente por que ele é adequado ao problema e às restrições.
+### 9.1 Tipo de desenho
+O estudo utilizará um **Desenho de Um Fator com Dois Níveis (One-Factor Two-Level Design)**, aplicando uma abordagem de **Medidas Repetidas (Paired Comparison)** sobre o objeto de estudo.
+
+* *Justificativa:* O mesmo conjunto de requisitos (Artefato Defeituoso) será submetido aos dois tratamentos (Manual e IA). Isso elimina a variância que existiria se usássemos requisitos diferentes para cada grupo, permitindo uma comparação direta ("Maçãs com Maçãs").
 
 ### 9.2 Randomização e alocação
-Explique o que será randomizado (sujeitos, tarefas, ordem de tratamentos) e como a randomização será feita na prática (ferramentas, procedimentos).
+* **O que será randomizado:** A ordem de apresentação dos requisitos dentro do *prompt* (ou a ordem de execução dos scripts) será aleatorizada para evitar que a IA sofra de "viés de atenção" (onde o modelo tende a analisar melhor o início ou o fim do texto — *primacy/recency effect*).
+* **Ferramenta:** Utilização da função `random.shuffle()` do Python para embaralhar a lista de User Stories antes do envio à API.
 
 ### 9.3 Balanceamento e contrabalanço
-Descreva como você garantirá que os grupos fiquem comparáveis (balanceamento) e como lidará com efeitos de ordem ou aprendizagem (contrabalanço).
+* **Balanceamento:** O número de observações será idêntico para ambos os grupos (ex: se houver 20 lacunas injetadas, ambos os métodos terão a chance de encontrar as mesmas 20).
+* **Contrabalanço:** Não se aplica fortemente pois a IA não sofre de "aprendizado" entre sessões (a memória é resetada a cada chamada de API), e o humano fará a revisão manual *antes* de ver o resultado da IA para não ser influenciado pelas respostas dela.
 
 ### 9.4 Número de grupos e sessões
-Informe quantos grupos existirão e quantas sessões ou rodadas cada sujeito ou grupo irá executar, com uma breve justificativa.
+* **Grupos:** 2 Grupos de Dados (Resultados Manuais vs. Resultados IA).
+* **Sessões:**
+  * 1 Sessão de Revisão Manual (Baseline).
+  * 1 Sessão de Execução Automatizada (IA).
+  * *Justificativa:* Como o custo da API é um fator limitante e o modelo é determinístico (com Temp=0), múltiplas rodadas massivas não adicionariam valor estatístico significativo para este escopo de TCC.
 
 ## 10. População, sujeitos e amostragem
 

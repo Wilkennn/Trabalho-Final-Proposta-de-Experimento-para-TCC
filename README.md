@@ -14,16 +14,17 @@ PRE-TCC-001
 
 ### 1.3 Versão do documento e histórico de revisão
 
-* **Versão Atual:** v1.1 (Detalhamento Metodológico)
+* **Versão Atual:** v1.3 (Planejamento Operacional e Administrativo)
 * **Histórico:**
   * **v1.0 (21/11/2025):** Criação inicial da proposta de Scoping.
   * **v1.1 (26/11/2025):** Inclusão da matriz GQM, definição detalhada de métricas, refinamento do contexto fiscal e análise de riscos.
-  * **v1.2 (28/11/2025):** População, sujeitos e amostragem; Instrumentação e protocolo operacional; Plano de análise de dados (pré-execução).
+  * **v1.2 (28/11/2025):** Detalhamento de população, amostragem, instrumentação, protocolo experimental e plano de análise de dados.
+  * **v1.3 (02/12/2025):** Definição das seções administrativas: Ética, Recursos, Cronograma, Governança, Documentação, Comunicação e Critérios de Prontidão.
 
 ### 1.4 Datas (criação, última atualização)
 
 * **Data de criação:** 21/11/2025
-* **Última atualização:** 28/11/2025
+* **Última atualização:** 02/12/2025
 
 ### 1.5 Autores (nome, área, contato)
 
@@ -316,144 +317,281 @@ O estudo utilizará um **Desenho de Um Fator com Dois Níveis (One-Factor Two-Le
 ## 10. População, sujeitos e amostragem
 
 ### 10.1 População-alvo
-Descreva qual é a população real que você deseja representar com o experimento (por exemplo, "desenvolvedores Java de times de produto web").
+Como este é um estudo focado em artefatos de software, a população-alvo divide-se em duas camadas:
+1.  **Artefatos:** O universo de Especificações de Requisitos de Software para sistemas ERP no domínio fiscal brasileiro (NFS-e), caracterizados por alta densidade normativa.
+2.  **Agentes:** A classe de Analistas de Requisitos com perfil Júnior ou Generalista, que compreendem a engenharia de software, mas carecem de especialização tributária profunda.
 
 ### 10.2 Critérios de inclusão de sujeitos
-Especifique os requisitos mínimos para um participante ser elegível (experiência, conhecimento, papel, disponibilidade, etc.).
+Para a simulação do agente humano (Pesquisador), o critério de inclusão é possuir conhecimento acadêmico em Engenharia de Software e modelagem de requisitos, mas **não possuir** certificação ou experiência avançada em consultoria tributária. Para os artefatos (*User Stories*), serão incluídas apenas histórias que envolvam regras de negócio validadas pela ABRASF (Associação Brasileira das Secretarias de Finanças das Capitais), garantindo a existência de um gabarito oficial.
 
 ### 10.3 Critérios de exclusão de sujeitos
-Liste condições que impedem participação (conflitos de interesse, falta de skills essenciais, restrições legais ou éticas).
+Serão excluídos da amostra artefatos relacionados a regras municipais específicas de uma única prefeitura (ex: regras exclusivas de BH ou SP que fogem ao padrão nacional), para garantir a generalização do estudo. Também serão excluídos agentes humanos (revisores convidados, se houver) que trabalhem profissionalmente com desenvolvimento de emissores fiscais, para evitar viés de *expert*.
 
 ### 10.4 Tamanho da amostra planejado (por grupo)
-Defina quantos participantes você pretende ter no total e em cada grupo, relacionando a decisão com poder, recursos e contexto.
+O experimento trabalhará com um conjunto de **15 a 20 User Stories** (Cenários de Teste).
+* **Justificativa:** Dado que a análise é qualitativa e profunda (cada história gera múltiplos tokens de análise e requer verificação manual no MOC), este número é suficiente para demonstrar a eficácia da ferramenta (Poder Estatístico) sem onerar excessivamente o orçamento da API da OpenAI.
+* **Grupos:** 1 grupo de artefatos submetido a 2 tratamentos (Manual e IA), totalizando 30 a 40 observações (medidas repetidas).
 
 ### 10.5 Método de seleção / recrutamento
-Explique como os participantes serão escolhidos (amostra de conveniência, sorteio, convite aberto, turma de disciplina, time específico).
+A seleção dos requisitos será feita por **Amostragem Intencional (*Purposive Sampling*)**. O pesquisador criará cenários sintéticos baseados nos casos de uso mais comuns descritos no Manual de Integração Nacional (Emissão Síncrona, Assíncrona, Cancelamento, Substituição), garantindo que as principais "dores" do domínio fiscal estejam representadas.
 
 ### 10.6 Treinamento e preparação dos sujeitos
-Descreva qual treinamento ou material preparatório será fornecido para nivelar entendimento e reduzir vieses por falta de conhecimento.
+* **Agente Humano:** Realizará uma leitura superficial ("Leitura Dinâmica") do Manual de Orientação, simulando o comportamento típico de um dev que busca informações sob demanda, sem decorar a norma.
+* **Agente IA:** O "treinamento" (contextualização) ocorrerá via *System Prompt*, onde serão inseridos os princípios fundamentais da NFS-e e as instruções de comportamento do auditor (*Role-Playing*).
 
 ## 11. Instrumentação e protocolo operacional
 
 ### 11.1 Instrumentos de coleta (questionários, logs, planilhas, etc.)
-Liste todos os instrumentos que serão usados para coletar dados (arquivos, formulários, scripts, ferramentas), com uma breve descrição do papel de cada um.
+A coleta de dados será automatizada e estruturada através dos seguintes instrumentos:
+1.  **Script Python de Orquestração:** Código responsável por ler as *User Stories*, enviar para a API (GPT-4o) e salvar as respostas.
+2.  **Repositório de Requisitos (JSON/Markdown):** Arquivos contendo as histórias de usuário "falhas" e o "Gabarito" (lista de erros esperados).
+3.  **Planilha de Consolidação (Google Sheets):** Matriz onde cada linha é um requisito e as colunas registram: `Erro Injetado`, `IA Encontrou? (S/N)`, `Humano Encontrou? (S/N)`, `Alucinação IA? (S/N)`.
 
 ### 11.2 Materiais de suporte (instruções, guias)
-Descreva as instruções escritas, guias rápidos, slides ou outros materiais que serão fornecidos a participantes e administradores do experimento.
+* **Base de Conhecimento (MOC):** PDFs oficiais do Padrão Nacional de NFS-e e Lei da Liberdade Econômica.
+* **Guia de Prompt:** Documento versionado contendo a estrutura exata do *prompt* (instrução de sistema, exemplos *few-shot* e formato de saída) para garantir reprodutibilidade.
 
 ### 11.3 Procedimento experimental (protocolo – visão passo a passo)
-Escreva, em ordem, o que acontecerá na operação (do convite ao encerramento), de modo que alguém consiga executar o experimento seguindo esse roteiro.
+
+A operacionalização do experimento segue um fluxo linear dividido em três macro-fases: Preparação, Execução dos Tratamentos e Análise de Dados. A figura abaixo (código Mermaid) ilustra a interação entre os instrumentos, os atores envolvidos e as métricas geradas em cada etapa.
+
+```mermaid
+graph TD
+    %% Definição de Estilos
+    classDef artifact fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef actor fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
+    classDef metric fill:#e0f2f1,stroke:#004d40,stroke-width:2px;
+
+    subgraph PREPARACAO [Fase 1: Preparação e Calibragem]
+        A1[MOC / Legislação NFS-e] -->|Leitura Técnica| P1(Definição do Gabarito / Ground Truth)
+        P1 -->|Injeção de Falhas| P2(Artefato Defeituoso: 20 User Stories)
+        P2 --- I1[Instrumento: JSON/Markdown]
+        P1 --- I2[Instrumento: Checklist de Regras]
+    end
+
+    subgraph EXECUCAO [Fase 2: Execução dos Tratamentos]
+        direction TB
+        %% Caminho Manual
+        P2 -->|Input| T1{Tratamento A: Revisão Manual}
+        T1 -->|Ator: Pesquisador| S1[Saída: Lista de Lacunas Humana]
+        S1 --- V1[Variável: Tempo Gasto]
+        
+        %% Caminho IA
+        P2 -->|Input| T2{Tratamento B: Revisão via IA}
+        T2 -->|Instrumento: Script Python + GPT-4o| S2[Saída: Relatório da IA]
+        T2 --- V2[Variável: Temp=0, Model=gpt-4o]
+    end
+
+    subgraph ANALISE [Fase 3: Análise e Métricas]
+        S1 & S2 -->|Comparação Cruzada| C1(Auditoria vs Gabarito)
+        C1 -->|Classificação| M1[Matriz de Confusão]
+        M1 -->|Cálculo| M2[Métricas Finais]
+        M2 --- K1[Recall / Revocação]
+        M2 --- K2[Precision / Precisão]
+        M2 --- K3[F-Measure]
+    end
+
+    %% Aplicação de Classes
+    class A1,I1,I2,S1,S2 artifact;
+    class P1,P2,C1,M1 process;
+    class T1,T2 actor;
+    class M2,K1,K2,K3 metric;
+```
+
+**Fase 1: Preparação e Calibragem (O1 e O2)**
+
+1.  **Definição do Ground Truth (Gabarito):** O pesquisador extrai regras mandatórias dos Manuais da ABRASF e da legislação vigente, criando uma lista de verificação que servirá como "Oráculo" (Verdade Fundamental).
+2.  **Construção do Artefato Defeituoso:** Criação de um conjunto de 15 a 20 *User Stories* sintéticas para um emissor de NFS-e.
+    * *Instrumento:* Editor de Texto / Arquivos JSON.
+    * *Ação:* Injeção deliberada de falhas (ex: remover validação de XSD, omitir tratamento de contingência) com base na lista do passo anterior.
+
+**Fase 2: Execução dos Tratamentos (Coleta de Dados)**
+
+Nesta etapa, o mesmo artefato ("Input") é submetido a dois processos distintos e independentes para evitar contaminação cruzada:
+
+1.  **Tratamento A (Revisão Manual - Controle):**
+    * *Ator:* Pesquisador (Simulando Analista Pleno).
+    * *Procedimento:* Revisão textual das *User Stories* buscando erros de conformidade, com consulta limitada aos manuais PDF.
+    * *Variável Controlada:* Tempo limite de execução (*Time-boxing*).
+    * *Saída:* Lista de Lacunas Identificadas (Humano).
+
+2.  **Tratamento B (Revisão Automatizada - Experimental):**
+    * *Ator:* Agente de IA (GPT-4o).
+    * *Instrumento:* Script Python de orquestração via API.
+    * *Variáveis de Configuração:* Temperatura = 0.0 (determinismo), Prompt com técnica *Chain-of-Thought*.
+    * *Saída:* Relatório de Auditoria JSON gerado pela IA.
+
+**Fase 3: Análise e Consolidação (O4)**
+
+1.  **Auditoria Cruzada:** As saídas de ambos os tratamentos são comparadas com o Gabarito Original.
+2.  **Classificação (Matriz de Confusão):** Cada apontamento é classificado como:
+    * *Verdadeiro Positivo (TP):* Lacuna real encontrada corretamente.
+    * *Falso Positivo (FP):* Alucinação (regra inventada ou irrelevante).
+    * *Falso Negativo (FN):* Lacuna existente no gabarito que não foi encontrada.
+3.  **Cálculo de Métricas:** Aplicação das fórmulas de *Recall* (Eficácia de Cobertura), *Precision* (Confiabilidade) e *F-Measure* para responder às questões de pesquisa.
 
 ### 11.4 Plano de piloto (se haverá piloto, escopo e critérios de ajuste)
-Indique se um piloto será realizado, com que participantes e objetivos, e defina que tipo de ajuste do protocolo poderá ser feito com base nesse piloto.
+Será realizado um **Teste Piloto com 2 User Stories**.
+
+* **Objetivo:** Verificar se a IA entende o formato JSON de saída e se o *prompt* não excede o limite de tokens.
+* **Critério de Ajuste:** Se a IA alucinar regras inexistentes no piloto, o *System Prompt* será refinado (adicionando restrições negativas) antes da execução principal.
 
 ## 12. Plano de análise de dados (pré-execução)
 
 ### 12.1 Estratégia geral de análise (como responderá às questões)
-Explique, em alto nível, como os dados coletados serão usados para responder cada questão de pesquisa ou de negócio.
+A análise será predominantemente **Quantitativa Descritiva**. Para responder às Questões de Pesquisa (QPs), utilizaremos uma Matriz de Confusão para comparar o desempenho dos dois métodos. O foco não é apenas dizer "quem é melhor", mas quantificar *o quanto* a IA agrega de segurança (cobertura) versus o ruído que ela gera.
 
 ### 12.2 Métodos estatísticos planejados
-Liste os principais testes ou técnicas estatísticas que pretende usar (por exemplo, t-teste, ANOVA, testes não paramétricos, regressão).
+Dada a natureza do estudo e o tamanho da amostra (n < 30), não serão aplicados testes de hipótese complexos (como ANOVA). Utilizaremos:
+
+* **Cálculo de Métricas de Classificação:** Recall (Sensibilidade), Precision (Precisão) e F-Measure.
+* **Estatística Descritiva:** Média e Desvio Padrão das taxas de acerto por categoria de requisito.
 
 ### 12.3 Tratamento de dados faltantes e outliers
-Defina previamente as regras para lidar com dados ausentes e valores extremos, evitando decisões oportunistas após ver os resultados.
+* **Dados Faltantes (API Fail):** Se a API falhar ou retornar erro de *timeout*, a execução será tentada mais 2 vezes. Se persistir, o requisito será descartado da amostra.
+* **Outliers (Respostas Estranhas):** Respostas da IA que fujam totalmente do contexto (ex: falar de culinária) serão classificadas como "Alucinação Crítica" e contabilizadas negativamente na Precisão, não removidas.
 
 ### 12.4 Plano de análise para dados qualitativos (se houver)
-Descreva como você tratará dados qualitativos (entrevistas, comentários, observações), especificando a técnica de análise (codificação, categorias, etc.).
+Será realizada uma **Análise de Conteúdo** simplificada sobre as alucinações da IA. As respostas incorretas serão categorizadas em: "Erro de Lógica", "Invenção de Lei" ou "Erro de Formatação", para entender a natureza das falhas do modelo.
 
 ## 13. Avaliação de validade (ameaças e mitigação)
 
 ### 13.1 Validade de conclusão
-Liste ameaças que podem comprometer a robustez das conclusões estatísticas (baixo poder, violação de suposições, erros de medida) e como pretende mitigá-las.
+* **Ameaça:** O tamanho reduzido da amostra (15-20 requisitos) pode não ter poder estatístico para provar superioridade absoluta.
+* **Mitigação:** Focar no **Tamanho do Efeito (*Effect Size*)**. Como as regras fiscais são binárias, espera-se que a diferença de detecção seja grande o suficiente para ser relevante mesmo com amostra pequena.
 
 ### 13.2 Validade interna
-Identifique ameaças relacionadas a causas alternativas para os efeitos observados (history, maturation, selection, etc.) e explique suas estratégias de controle.
+* **Ameaça (Instrumentação):** O pesquisador pode criar defeitos que ele *sabe* que a IA encontra (viés de confirmação inconsciente).
+* **Mitigação:** Utilizar exemplos de defeitos reais extraídos de fóruns de desenvolvedores (Stack Overflow, GitHub Issues de bibliotecas NFe) para dar realismo aos erros injetados.
 
 ### 13.3 Validade de constructo
-Reflita se as medidas escolhidas realmente representam os conceitos de interesse e descreva como você reduzirá ambiguidades de interpretação.
+* **Ameaça:** A métrica "Recall" pode não representar "Qualidade Total". A IA pode achar o erro, mas explicar de forma confusa.
+* **Mitigação:** Adicionar uma variável qualitativa de "Clareza da Explicação" para avaliar se a sugestão da IA é acionável por um humano.
 
 ### 13.4 Validade externa
-Discuta em que contextos os resultados podem ser generalizados e quais diferenças de cenário podem limitar essa generalização.
+* **Ameaça (Generalização):** O sucesso em NFS-e (regras rígidas) pode não se aplicar a domínios criativos ou subjetivos.
+* **Mitigação:** Deixar explícito nas conclusões que os resultados são válidos para **domínios regulados/normativos** e não devem ser generalizados para requisitos de UI/UX.
 
 ### 13.5 Resumo das principais ameaças e estratégias de mitigação
-Faça uma síntese das ameaças mais críticas e das ações planejadas, de preferência em forma de lista ou tabela simples.
+
+| Ameaça | Tipo | Estratégia de Mitigação |
+| :--- | :--- | :--- |
+| **Viés do Pesquisador** (Criar erros fáceis) | Interna | Basear os erros em *issues* reais de projetos Open Source de NFe. |
+| **Alucinação da IA** (Invalidar resultados) | Construto | Uso rigoroso de *Chain-of-Thought* no prompt e validação manual cruzada. |
+| **Amostra Pequena** (Poucos requisitos) | Conclusão | Foco na análise qualitativa das falhas e no tamanho do efeito observado. |
+| **Obsolescência** (IA desatualizada) | Externa | Fornecer trechos da lei atualizada no contexto (*RAG simplificado*) se necessário. |
 
 ## 14. Ética, privacidade e conformidade
 
 ### 14.1 Questões éticas (uso de sujeitos, incentivos, etc.)
-Descreva potenciais questões éticas (pressão para participar, uso de estudantes, incentivos, riscos de exposição) e como serão tratadas.
+Como o experimento é uma simulação técnica (*in vitro*) onde o "sujeito humano" é o próprio pesquisador, não há riscos diretos a participantes externos, eliminando preocupações com pressão psicológica ou incentivos financeiros indevidos. A principal questão ética reside na **Integridade Acadêmica**: o pesquisador compromete-se a não manipular os dados gerados pela IA para forçar a comprovação das hipóteses e a declarar explicitamente o uso de ferramentas de IA na metodologia do trabalho final.
 
 ### 14.2 Consentimento informado
-Explique como os participantes serão informados sobre objetivos, riscos, benefícios e como registrarão seu consentimento.
+Não se aplica a sujeitos externos. O consentimento do pesquisador é implícito na autoria do trabalho. Caso haja a inclusão futura de validadores externos (ex: um colega desenvolvedor para uma segunda opinião), será utilizado um **Termo de Consentimento Livre e Esclarecido (TCLE)** simplificado, informando que a participação é voluntária e anônima.
 
 ### 14.3 Privacidade e proteção de dados
-Indique que dados pessoais serão coletados, como serão protegidos (anonimização, pseudoanonimização, controle de acesso) e por quanto tempo serão mantidos.
+Em estrita conformidade com a **Lei Geral de Proteção de Dados (LGPD)**, o experimento utilizará exclusivamente **Dados Sintéticos**.
+* **Dados Coletados:** Nomes, CNPJs, endereços e valores monetários utilizados nos artefatos de teste serão fictícios (gerados por ferramentas como *Faker* ou *4Devs*).
+* **Vedação:** É estritamente proibido o uso de Notas Fiscais reais, dados de empresas parceiras ou informações pessoais identificáveis no *prompt* enviado à API da OpenAI.
 
 ### 14.4 Aprovações necessárias (comitê de ética, jurídico, DPO, etc.)
-Liste órgãos ou pessoas que precisam aprovar o experimento (comitê de ética, jurídico, DPO, gestores) e o status atual dessas aprovações.
+* **Orientador do TCC:** Aprovação metodológica do desenho experimental.
+* **Comitê de Ética em Pesquisa (CEP):** Devido à natureza documental e de simulação sem intervenção em seres humanos externos, entende-se que o projeto se enquadra nos critérios de isenção ou tramitação simplificada, dependendo das normas específicas da instituição de ensino.
 
 ## 15. Recursos, infraestrutura e orçamento
 
 ### 15.1 Recursos humanos e papéis
-Identifique os membros da equipe do experimento e descreva brevemente o papel e responsabilidade de cada um.
+* **Pesquisador Principal:** Responsável pela criação dos roteiros, desenvolvimento dos scripts, execução dos testes e análise estatística.
+* **Orientador Acadêmico:** Responsável pela revisão do plano, validação das métricas e orientação sobre a escrita científica.
 
 ### 15.2 Infraestrutura técnica necessária
-Liste ambientes, servidores, ferramentas, repositórios e integrações que devem estar disponíveis para executar o experimento.
+* **Ambiente de Desenvolvimento:** Computador pessoal com Python 3.9+ e IDE (VS Code).
+* **Controle de Versão:** Repositório privado no GitHub.
+* **Serviços em Nuvem:** Acesso à API da OpenAI (Plataforma *Developer*).
+* **Ferramentas de Escritório:** Planilhas para tabulação e Overleaf (LaTeX) para redação.
 
 ### 15.3 Materiais e insumos
-Relacione materiais físicos ou digitais necessários (máquinas, licenças, formulários, dispositivos) que precisam estar prontos antes da operação.
+* **Manuais Normativos:** PDFs atualizados do Manual de Integração da ABRASF e Notas Técnicas da Receita Federal.
+* **Dataset de Teste:** Arquivo JSON contendo as 20 *User Stories* sintéticas ("Artefato Defeituoso").
 
 ### 15.4 Orçamento e custos estimados
-Faça uma estimativa dos principais custos envolvidos (horas de pessoas, serviços, licenças, infraestrutura) e a fonte de financiamento.
+O projeto é autofinanciado pelo pesquisador.
+* **API OpenAI (GPT-4o):** Estimativa de consumo de 500k a 1M tokens (input + output). Custo estimado: **US$ 15,00 a US$ 30,00** (aprox. R$ 150,00).
+* **Horas-Homem:** Estimativa de 80 horas de dedicação do pesquisador (sem custo financeiro direto).
 
 ## 16. Cronograma, marcos e riscos operacionais
 
 ### 16.1 Macrocronograma (até o início da execução)
-Defina as principais datas e marcos (conclusão do plano, piloto, revisão, início da operação) com uma visão de tempo realista.
+* **Semana 1:** Finalização do Plano Experimental e Configuração do Ambiente Python.
+* **Semana 2:** Criação do "Gabarito" (*Ground Truth*) e Injeção de Falhas nas *User Stories*.
+* **Semana 3 (Marco: Piloto):** Execução do Teste Piloto (2 casos) e ajuste de *Prompt*.
+* **Semana 4:** Coleta de Dados Principal (Execução dos Scripts e Revisão Manual).
+* **Semana 5:** Análise dos Dados (Cálculo de Recall/Precision) e Tabulação.
+* **Semana 6:** Redação do Capítulo de Resultados e Discussão no TCC.
 
 ### 16.2 Dependências entre atividades
-Indique quais atividades dependem de outras para começar (por exemplo, treinamento após aprovação ética), deixando essas dependências claras.
+* A **Fase de Coleta (Semana 4)** tem dependência bloqueante da **Disponibilidade da Chave de API** (pagamento aprovado).
+* A **Análise de Dados (Semana 5)** depende da conclusão total da classificação manual dos resultados da IA (não é possível analisar parcialmente).
 
 ### 16.3 Riscos operacionais e plano de contingência
-Liste riscos ligados a cronograma, disponibilidade de pessoas ou recursos, e descreva ações de contingência caso esses riscos se materializem.
+* **Risco:** Esgotamento de créditos da API no meio do experimento.
+    * *Contingência:* Utilizar modelo mais barato (GPT-3.5-Turbo) apenas para comparação ou recarregar créditos emergenciais.
+* **Risco:** Falta de tempo para revisão manual detalhada.
+    * *Contingência:* Reduzir a amostra de 20 para 10 *User Stories* (mantendo a representatividade das categorias).
 
 ## 17. Governança do experimento
 
 ### 17.1 Papéis e responsabilidades formais
-Defina quem decide, quem executa, quem revisa e quem apenas deve ser informado, deixando claro o fluxo de responsabilidade.
+* **Decisor:** Orientador (aprova mudanças de escopo).
+* **Executor:** Pesquisador (realiza todas as atividades operacionais).
+* **Revisor:** Orientador (avalia a qualidade dos artefatos produzidos).
 
 ### 17.2 Ritos de acompanhamento pré-execução
-Descreva as reuniões, checkpoints e revisões previstos antes da execução, incluindo frequência e participantes.
+* **Reuniões de Orientação:** Quinzenais ou semanais, conforme disponibilidade do professor.
+* **Checkpoint de Validação:** Uma reunião específica para validar o "Artefato Defeituoso" antes de submetê-lo à IA.
 
 ### 17.3 Processo de controle de mudanças no plano
-Explique como mudanças no desenho ou no escopo do experimento serão propostas, analisadas, aprovadas e registradas.
+Qualquer alteração que afete as Hipóteses, o Tamanho da Amostra ou o Modelo de IA utilizado deve ser registrada no **Histórico de Revisão** deste documento (seção 1.3) e comunicada formalmente ao orientador por e-mail.
 
 ## 18. Plano de documentação e reprodutibilidade
 
 ### 18.1 Repositórios e convenções de nomeação
-Indique onde o plano, instrumentos, scripts e dados (futuros) serão armazenados e quais convenções de nomes serão usadas.
+* **GitHub:** Projeto `tcc-nfse-ai-auditor`.
+* **Estrutura de Pastas:** `/data` (inputs e outputs), `/src` (scripts), `/docs` (plano e relatórios).
+* **Convenção:** Arquivos de log datados (ex: `execution_log_2025-11-26.json`).
 
 ### 18.2 Templates e artefatos padrão
-Liste os modelos (questionários, formulários, checklists, scripts) que serão usados e onde podem ser encontrados.
+* **Schema de User Story:** Modelo JSON padronizado para entrada dos requisitos.
+* **Checklist de Revisão Manual:** Planilha padrão para registro das falhas encontradas pelo humano.
 
 ### 18.3 Plano de empacotamento para replicação futura
-Descreva o que será organizado desde já (documentos, scripts, instruções) para facilitar a replicação do experimento por outras equipes ou no futuro.
+O repositório conterá um arquivo `README.md` detalhado com instruções de instalação (`requirements.txt`) e execução, permitindo que outros pesquisadores repliquem o estudo utilizando suas próprias chaves de API.
 
 ## 19. Plano de comunicação
 
 ### 19.1 Públicos e mensagens-chave pré-execução
-Liste os grupos que precisam ser comunicados e quais mensagens principais devem receber (objetivos, escopo, datas, impactos esperados).
+* **Orientador:** "O plano está pronto, o ambiente configurado e o gabarito definido. Aguardando 'de acordo' para iniciar a coleta."
+* **Banca Examinadora (Futuro):** "A metodologia foi rigorosa e os dados são auditáveis."
 
 ### 19.2 Canais e frequência de comunicação
-Defina por quais canais (e-mail, reuniões, Slack/Teams, etc.) e com que frequência as comunicações serão feitas.
+* **E-mail Institucional:** Para formalizações e envio de artefatos.
+* **Reuniões Presenciais/Remotas:** Para discussão de dúvidas complexas e análise de resultados preliminares.
 
 ### 19.3 Pontos de comunicação obrigatórios
-Especifique os eventos que exigem comunicação formal (aprovação do plano, mudanças relevantes, adiamentos, cancelamentos).
+1.  Entrega do Plano de Experimento (v1.1).
+2.  Relato de Sucesso/Falha do Piloto.
+3.  Conclusão da Coleta de Dados.
 
 ## 20. Critérios de prontidão para execução (Definition of Ready)
 
 ### 20.1 Checklist de prontidão (itens que devem estar completos)
-Liste os itens que precisam estar finalizados e aprovados (plano, instrumentos, aprovação ética, recursos, comunicação) para autorizar o início da operação.
+Para iniciar a fase de execução, os seguintes itens devem estar marcados como "Concluído":
+- [ ] Plano de Experimento revisado e aprovado pelo orientador.
+- [ ] Chave de API da OpenAI ativa e com saldo.
+- [ ] Script Python testado ("Hello World" da API).
+- [ ] "Gabarito" (*Ground Truth*) das NFS-e finalizado.
+- [ ] Repositório Git iniciado.
 
 ### 20.2 Aprovações finais para iniciar a operação
-Indique quem precisa dar o "ok final" (nomes ou cargos) e como esse aceite será registrado antes da execução começar.
+A execução será autorizada mediante validação verbal ou por e-mail do **Orientador**, após a apresentação do resultado do Teste Piloto.

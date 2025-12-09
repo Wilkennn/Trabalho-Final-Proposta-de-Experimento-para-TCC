@@ -247,50 +247,61 @@ As hipóteses abaixo formalizam a comparação entre o método de Revisão Manua
 ### 7.3 Nível de significância e considerações de poder
 O experimento adotará um nível de significância padrão de **α = 0,05** (95% de confiança).
 Considerando as restrições de um TCC (amostra limitada de requisitos), reconhece-se que o **Poder Estatístico (1 - β)** pode ser reduzido. Para mitigar isso, buscar-se-á um *Effect Size* (Tamanho de Efeito) grande, focando em lacunas binárias e óbvias (ex: "Falta contingência"), onde a diferença de performance entre o Humano Júnior e a IA Sênior tende a ser expressiva.
+
 ## 8. Variáveis, fatores, tratamentos e objetos de estudo
 
 ### 8.1 Objetos de estudo
 O objeto a ser analisado é um conjunto controlado de **Especificações de Requisitos para Emissão de NFS-e**. Este conjunto (o "Artefato Defeituoso") conterá:
-* 10 a 20 Histórias de Usuário (*User Stories*).
-* Falhas injetadas deliberadamente (ex: omissão de validação de XSD, falta de tratamento de *timeout* da SEFAZ, ausência de retenção de ISS).
+* 15 a 20 Histórias de Usuário (*User Stories*) padronizadas.
+* Falhas injetadas deliberadamente em cada história, cobrindo diferentes aspectos da validação fiscal (ex: omissão de tags XML, falta de cálculo de ISS, ausência de tratamento de erro).
 
 ### 8.2 Sujeitos / participantes (visão geral)
-Devido à natureza *in vitro* e automatizada do experimento, os "sujeitos" que executam a tarefa de revisão são:
-1.  **Sujeito A (Humano/Controle):** O próprio pesquisador, simulando a revisão de um Analista Pleno sem acesso a ferramentas de IA.
+Devido à natureza *in vitro* do experimento, os "sujeitos" executores são:
+1.  **Sujeito A (Humano/Controle):** O próprio pesquisador, simulando a revisão de um Analista Pleno sob restrição de tempo, utilizando apenas leitura visual e consulta a manuais PDF.
 2.  **Sujeito B (Agente Virtual/Tratamento):** O modelo GPT-4o configurado via API.
 
 ### 8.3 Variáveis independentes (fatores) e seus níveis
-O fator principal manipulado neste estudo é o **Método de Revisão**.
+Para evitar uma análise superficial, o experimento manipula dois fatores simultaneamente, permitindo identificar não apenas *se* a IA é melhor, mas *em que tipo de problema* ela se destaca:
+
+* **Fator A (Principal): Agente de Inspeção**
+    * Variável que alterna o executor da tarefa.
+    * **Níveis:** (1) Analista Humano *vs.* (2) Agente de IA (GPT-4o).
+* **Fator B (Secundário): Tipologia da Falha**
+    * Variável intrínseca ao requisito, classificando a natureza do erro injetado.
+    * **Níveis:**
+        * **(1) Sintática/Formato:** Erros relacionados à estrutura de dados, tipos de campos, máscaras e validação de Schema XSD (ex: campo data com formato inválido).
+        * **(2) Semântica/Negócio:** Erros relacionados à lógica tributária, regras de cálculo, retenções e fluxo de processo (ex: não reter ISS quando o tomador é de outro município).
 
 ### 8.4 Tratamentos (condições experimentais)
-A tabela abaixo descreve o desenho fatorial simples do experimento (1 Fator, 2 Níveis).
+O cruzamento dos fatores cria um desenho experimental fatorial (2x2) que permite analisar nuances de desempenho:
 
-| Fator | Nível / Tratamento | Descrição da Condição |
+| ID | Condição Experimental | Descrição Operacional |
 | :--- | :--- | :--- |
-| **Método de Revisão** | **T1: Manual (Controle)** | Revisão realizada exclusivamente por humano, consultando manuais PDF, sem auxílio de IA. Representa o *baseline*. |
-| | **T2: Assistido por IA** | Revisão realizada pelo agente GPT-4o com *Prompt* de Auditoria Fiscal (CoT). |
+| **T1** | **Humano + Erro Sintático** | O pesquisador revisa o requisito buscando falhas de formatação/schema. |
+| **T2** | **Humano + Erro Semântico** | O pesquisador revisa o requisito buscando falhas de lógica fiscal/regras de negócio. |
+| **T3** | **IA + Erro Sintático** | O GPT-4o analisa o requisito buscando falhas de formatação/schema. |
+| **T4** | **IA + Erro Semântico** | O GPT-4o analisa o requisito buscando falhas de lógica fiscal/regras de negócio. |
 
 ### 8.5 Variáveis dependentes (respostas)
-O estudo foca em uma única variável dependente primária para mensurar o sucesso da auditoria:
+A variável de resposta foca na eficácia de detecção, estratificada pelos fatores acima definidos.
 
 | Tipo de Variável | Nome | Descrição | Escala / Unidade |
 | :--- | :--- | :--- | :--- |
-| **Independente** | Método de Revisão | A técnica aplicada para encontrar lacunas. | Nominal (Manual / IA) |
-| **Dependente** | **Eficácia de Detecção** | A capacidade do agente de identificar as falhas injetadas. Mensurada pela métrica de **Recall** (Revocação).<br>Fórmula: `Lacunas Encontradas / Total de Lacunas Injetadas`. | Razão (0.00 a 1.00) |
-| **Controle** | Modelo de LLM | Versão exata do modelo utilizado (ex: `gpt-4o-2024-05-13`) para garantir consistência. | Nominal |
-| **Controle** | Temperatura da IA | Parâmetro de aleatoriedade do modelo, fixado em 0.0 ou 0.1. | Numérica (0.0 - 1.0) |
-| **Controle** | Domínio | O escopo das regras (apenas NFS-e Padrão Nacional). | Nominal |
+| **Independente 1** | **Agente de Inspeção** | O sujeito que executa a auditoria. | Nominal (Humano/IA) |
+| **Independente 2** | **Tipologia da Falha** | A categoria do erro escondido no requisito. | Nominal (Sintática/Semântica) |
+| **Dependente** | **Eficácia de Detecção (Recall)** | Capacidade de encontrar a falha específica.<br>*Fórmula:* `Lacunas Encontradas / Total de Lacunas Injetadas`. | Razão (0.00 a 1.00) |
+| **Controle** | Prompt Base | O comando enviado à IA será constante para garantir isonomia. | Texto Fixo |
+| **Controle** | Tempo Humano | O tempo de revisão manual será limitado (*time-boxed*) em 5 min/requisito para simular pressão real de sprint. | Minutos |
 
 ### 8.6 Variáveis de controle / bloqueio
 Fatores mantidos constantes para evitar ruído nos dados:
-* **Temperatura:** Fixada próxima a zero para minimizar a criatividade e focar na análise determinística.
-* **Prompt Base:** A estrutura do prompt será idêntica para todas as execuções do grupo de tratamento.
-* **Complexidade dos Requisitos:** Todos os requisitos testados terão nível de complexidade similar (regras de negócio de validação).
+* **Temperatura da IA:** Fixada em 0.0 para minimizar a criatividade e focar na análise determinística.
+* **Modelo de LLM:** Uso exclusivo da versão `gpt-4o` (versão congelada) para evitar variações de atualização do modelo durante o teste.
+* **Complexidade Textual:** Todas as User Stories terão extensão similar (entre 100 e 150 palavras) para não favorecer nenhum grupo.
 
 ### 8.7 Possíveis variáveis de confusão conhecidas
-* **Taxa de Alucinação (Precisão):** Embora não seja a variável dependente principal, a geração excessiva de falsos positivos pode aumentar o esforço de análise. Será monitorada qualitativamente como fator de confusão para a viabilidade prática.
-* **Qualidade do Prompt:** Um prompt mal escrito pode fazer a IA falhar não por falta de capacidade, mas por falta de instrução. Isso será monitorado na fase de calibração (O3).
-* **Viés do Pesquisador:** Como o pesquisador criou os defeitos e também validará as respostas, existe risco de subjetividade na classificação de "Sugestão Válida".
+* **Taxa de Alucinação (Precisão):** Embora o foco seja o Recall, a IA pode gerar muitos falsos positivos. Isso será monitorado qualitativamente, pois uma ferramenta que alerta erros demais pode ser rejeitada pelos usuários, mesmo tendo alto Recall.
+* **Viés de Aprendizado Humano:** O pesquisador pode ficar "melhor" em achar erros nas últimas histórias do que nas primeiras. Para mitigar, a ordem de revisão será aleatória.
 
 ## 9. Desenho experimental
 

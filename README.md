@@ -247,7 +247,6 @@ As hipóteses abaixo formalizam a comparação entre o método de Revisão Manua
 ### 7.3 Nível de significância e considerações de poder
 O experimento adotará um nível de significância padrão de **α = 0,05** (95% de confiança).
 Considerando as restrições de um TCC (amostra limitada de requisitos), reconhece-se que o **Poder Estatístico (1 - β)** pode ser reduzido. Para mitigar isso, buscar-se-á um *Effect Size* (Tamanho de Efeito) grande, focando em lacunas binárias e óbvias (ex: "Falta contingência"), onde a diferença de performance entre o Humano Júnior e a IA Sênior tende a ser expressiva.
-
 ## 8. Variáveis, fatores, tratamentos e objetos de estudo
 
 ### 8.1 Objetos de estudo
@@ -272,13 +271,12 @@ A tabela abaixo descreve o desenho fatorial simples do experimento (1 Fator, 2 N
 | | **T2: Assistido por IA** | Revisão realizada pelo agente GPT-4o com *Prompt* de Auditoria Fiscal (CoT). |
 
 ### 8.5 Variáveis dependentes (respostas)
-A tabela a seguir detalha todas as variáveis monitoradas, seus tipos e como serão coletadas.
+O estudo foca em uma única variável dependente primária para mensurar o sucesso da auditoria:
 
 | Tipo de Variável | Nome | Descrição | Escala / Unidade |
 | :--- | :--- | :--- | :--- |
 | **Independente** | Método de Revisão | A técnica aplicada para encontrar lacunas. | Nominal (Manual / IA) |
-| **Dependente** | **Recall (Revocação)** | Capacidade de encontrar o erro. Fórmula: `Lacunas Encontradas / Total de Lacunas Injetadas`. | Razão (0.00 a 1.00) |
-| **Dependente** | **Precision (Precisão)** | Qualidade da sugestão. Fórmula: `Sugestões Válidas / Total de Sugestões`. | Razão (0.00 a 1.00) |
+| **Dependente** | **Eficácia de Detecção** | A capacidade do agente de identificar as falhas injetadas. Mensurada pela métrica de **Recall** (Revocação).<br>Fórmula: `Lacunas Encontradas / Total de Lacunas Injetadas`. | Razão (0.00 a 1.00) |
 | **Controle** | Modelo de LLM | Versão exata do modelo utilizado (ex: `gpt-4o-2024-05-13`) para garantir consistência. | Nominal |
 | **Controle** | Temperatura da IA | Parâmetro de aleatoriedade do modelo, fixado em 0.0 ou 0.1. | Numérica (0.0 - 1.0) |
 | **Controle** | Domínio | O escopo das regras (apenas NFS-e Padrão Nacional). | Nominal |
@@ -290,6 +288,7 @@ Fatores mantidos constantes para evitar ruído nos dados:
 * **Complexidade dos Requisitos:** Todos os requisitos testados terão nível de complexidade similar (regras de negócio de validação).
 
 ### 8.7 Possíveis variáveis de confusão conhecidas
+* **Taxa de Alucinação (Precisão):** Embora não seja a variável dependente principal, a geração excessiva de falsos positivos pode aumentar o esforço de análise. Será monitorada qualitativamente como fator de confusão para a viabilidade prática.
 * **Qualidade do Prompt:** Um prompt mal escrito pode fazer a IA falhar não por falta de capacidade, mas por falta de instrução. Isso será monitorado na fase de calibração (O3).
 * **Viés do Pesquisador:** Como o pesquisador criou os defeitos e também validará as respostas, existe risco de subjetividade na classificação de "Sugestão Válida".
 

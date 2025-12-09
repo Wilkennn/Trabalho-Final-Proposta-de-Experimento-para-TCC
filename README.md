@@ -96,12 +96,13 @@ Analisar o uso de Grandes Modelos de Linguagem (LLMs), especificamente a arquite
 | **Artefato:** Histórias de Usuário (*User Stories*), Critérios de Aceite e Regras de Negócio textuais. | **Artefato:** Diagramas UML complexos, Prototipação de telas (*Wireframes*), Testes de Carga ou Documentação de Arquitetura. |
 
 ### 3.2 Objetivos específicos
-Para alcançar o objetivo geral, o experimento ramifica-se nos seguintes objetivos especificos:
 
-* **O1:** **Mapear e definir o padrão-ouro (*Ground Truth*)** de requisitos para emissão de NFS-e, baseando-se estritamente na legislação vigente e nos Manuais da ABRASF, para servir como gabarito de correção.
-* **O2:** **Elaborar um conjunto de requisitos "falhos"**, simulando especificações incompletas típicas de analistas júnior (com omissões de contingência, segurança e validação), criando assim a base de teste controlada.
-* **O3:** **Implementar e calibrar o agente de IA**, desenvolvendo estratégias de *prompt* que induzam o modelo a atuar como um auditor fiscal, maximizando a detecção de erros e minimizando respostas genéricas.
-* **O4:** **Realizar a auditoria automatizada e comparar os resultados**, cruzando as sugestões da IA com o gabarito oficial para classificar cada apontamento como: acerto (lacuna real), erro (alucinação) ou irrelevante.
+Para concretizar o objetivo geral, o experimento define as seguintes metas de análise:
+
+* **O1:** **Validar a eficácia** do modelo GPT-4o na detecção de lacunas de requisitos e regras de negócio omitidas, verificando se a ferramenta consegue identificar falhas críticas de conformidade.
+* **O2:** **Medir a confiabilidade** das sugestões geradas pela IA, quantificando a taxa de "alucinações" (falsos positivos) para determinar se a ferramenta é segura para uso profissional.
+* **O3:** **Analisar o impacto** das técnicas de Engenharia de Prompt (*Chain-of-Thought*) na qualidade das respostas, verificando se o uso de instruções estruturadas melhora o raciocínio lógico da IA sobre a legislação.
+* **O4:** **Comparar o desempenho** da revisão assistida por IA frente à revisão manual tradicional, avaliando potenciais ganhos de cobertura na inspeção de requisitos.
 
 ### 3.3 Questões de pesquisa / de negócio
 
